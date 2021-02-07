@@ -21,8 +21,8 @@ public class LocalPlayer : MonoBehaviour
     private string title;
     private string status;
 
-
-
+    //Store Training Entries Here
+    public List<TrainingEntryObject> trainingEntryLog = new List<TrainingEntryObject>();
 
     // Start is called before the first frame update
     void Start()

@@ -19,7 +19,7 @@ public class TrainingEntryButtons : MonoBehaviour
     public void CallButtonExtraction()
     {
         trainingEntry.GetComponent<TrainingEntry>().button = gameObject;
-        trainingEntry.GetComponent<TrainingEntry>().buttonExtraction();
+        trainingEntry.GetComponent<TrainingEntry>().ButtonExtraction();
     }
 
     // Update is called once per frame
