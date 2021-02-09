@@ -8,5 +8,6 @@ public class TrainingEntryObject : MonoBehaviour
     public string levelAtEntry;
     public float time;
     public string type;
-    public string tag;
+    public string entryTag;
+    public string timeCreated;
 }

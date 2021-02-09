@@ -88,9 +88,12 @@ public class TrainingEntry : MonoBehaviour
         else
         {
             TrainingEntryObject newEntry = new TrainingEntryObject();
+            newEntry.levelAtEntry = player.level.text;
             newEntry.time = timeStorage;
             newEntry.type = typeStorage;
-            newEntry.tag = tagStorage;
+            newEntry.entryTag = tagStorage;
+            newEntry.timeCreated = System.DateTime.Now.ToString();
+            Debug.Log(newEntry.timeCreated);
 
             // Add to list.
             player.trainingEntryLog.Add(newEntry);

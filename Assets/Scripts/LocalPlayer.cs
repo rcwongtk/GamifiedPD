@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Linq;
+using System;
 
 public class LocalPlayer : MonoBehaviour
 {
@@ -21,13 +23,14 @@ public class LocalPlayer : MonoBehaviour
 
     // Player Details here
     private string crew;
-    private string focus;
+    public TMP_Text focus;
     private string title;
-    private string status;
+    public TMP_Text status;
+
+    private List<string> tags = new List<string>();
 
     //Store Training Entries Here
     public List<TrainingEntryObject> trainingEntryLog = new List<TrainingEntryObject>();
-    public List<LevelStatIncreases> allStatIncreases = new List<LevelStatIncreases>();
 
     // Start is called before the first frame update
     void Start()
@@ -47,7 +50,7 @@ public class LocalPlayer : MonoBehaviour
         float intelligence;
         float soul;
 
-        if (trainingEntryLog.Count > 0)
+        if(trainingEntryLog.Count > 0)
         {
             // Calculate experience/level based on entries and move slider accordingly
             hours = 0;
@@ -56,6 +59,8 @@ public class LocalPlayer : MonoBehaviour
             vit = 0;
             intelligence = 0;
             soul = 0;
+            tags.Clear();
+
             foreach(TrainingEntryObject entry in trainingEntryLog)
             {
                 hours += entry.time;
@@ -86,7 +91,7 @@ public class LocalPlayer : MonoBehaviour
                         break;
                 }
                 
-                switch(entry.tag)
+                switch(entry.entryTag)
                 {
                     case "Toprock":
                         dex += entry.time;
@@ -121,10 +126,13 @@ public class LocalPlayer : MonoBehaviour
                         break;
 
                 }
+
+                tags.Add(entry.entryTag);
+
             }
-            int tempTotalExp = (int)hours*20;
-            int tempLevel = 1 + ((int)tempTotalExp / 100);
-            int tempExpRemaining = (int)tempTotalExp % 100;
+            int tempTotalExp = (int)(hours*20);
+            int tempLevel = 1 + ((int)(tempTotalExp / 100));
+            int tempExpRemaining = (int)(tempTotalExp % 100);
             level.text = tempLevel.ToString();
             exp.text = "EXP: " + tempExpRemaining.ToString();
             expSlider.value = tempExpRemaining;
@@ -135,10 +143,67 @@ public class LocalPlayer : MonoBehaviour
             intText.text = ((int)intelligence).ToString();
             soulText.text = ((int)soul).ToString();
 
+            List<List<string>> slottedList = new List<List<string>>();
+
+            foreach(string tag in tags)
+            {
+                bool listExists = false;
+
+                for(int i = 0; i < slottedList.Count; i++)
+                {
+                    if(slottedList[i].Contains(tag))
+                    {
+                        slottedList[i].Add(tag);
+                        listExists = true;
+                    }
+                }
+
+                if(listExists == false)
+                {
+                    slottedList.Add(new List<string>());
+                    slottedList[slottedList.Count - 1].Add(tag);
+                }
+            }
+
+            int listCount = 0;
+            string listTag = "-";
+            foreach(List<string> list in slottedList)
+            {
+                if(list.Count > listCount)
+                {
+                    listCount = list.Count;
+                    listTag = list[0];
+                }
+            }
+
+            focus.text = listTag;
 
         }
 
+        if(trainingEntryLog.Count >= 2)
+        {
+            // Compare the last two entries. If the time between the two is greater than 1 week, flag as "Lacking Training"
+            // If the time between the two is greater than 3 days, flag as "Training Less"
+            // If the time between the two is less than 3 days, flag as "Rocking Hard"
+            DateTime time1 = DateTime.Parse(trainingEntryLog[trainingEntryLog.Count - 1].timeCreated);
+            DateTime time2 = DateTime.Now;
 
+            TimeSpan trainingDifference = time2 - time1;
+
+            if(trainingDifference.Days > 7)
+            {
+                status.text = "Lacking Training";
+            }
+            else if(trainingDifference.Days > 3 && trainingDifference.Days < 7)
+            {
+                status.text = "Losing Motivation";
+            }
+            else if(trainingDifference.Days <= 3)
+            {
+                status.text = "Rocking Hard";
+            }
+
+        }
 
 
     }
